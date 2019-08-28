@@ -1,0 +1,63 @@
+#自己写的文件
+import data_procs  as dp
+import re
+import string
+from sklearn.metrics.pairwise import cosine_similarity
+
+#计算元素之间的cos相似度
+
+def top5result(input_q):
+    """
+       给定用户输入的问题 input_q, 返回最有可能的TOP 5问题。
+       这里面需要做到以下几点：
+       1. 对于用户的输入 input_q 首先做一系列的预处理，
+       然后再转换成tf-idf向量（利用上面的vectorizer)
+       2. 计算跟每个库里的问题之间的相似度
+       3. 找出相似度最高的top5问题的答案
+       """
+    # 将输入的问题进行预处理
+    #print(input_q)
+    pattern = re.compile('[{}]'.format(re.escape(string.punctuation)))
+    sentence = pattern.sub("",input_q)
+    sentence = sentence.lower()
+    words = sentence.split()
+    result =[]
+    for word in words :
+        if word not in dp.stopwords:
+            word = "#number" if word.isdigit() else word
+            w = dp.stemmer.stem(word)
+            result.append(w)
+    #print(result)
+    #计算相似度
+    input_seg = ' '.join(result)
+    input_vec = dp.vectorizer.transform([input_seg])
+    res = cosine_similarity(input_vec,dp.X)[0]
+    '''
+    from sklearn.metrics.pairwise import cosine_similarity
+
+    a1=np.arange(15).reshape(-1,5)
+    a2=np.arange(20).reshape(4,5)
+    print(cosine_similarity(a1,a2))
+
+    输出结果：
+     [[1.         0.91465912 0.87845859 0.86154979]
+    [0.91465912 1.         0.99663684 0.99323905]
+    [0.87845859 0.99663684 1.         0.9994114 ]]
+     第一行的值是a1中的第一个样本与a2中所有的样本的余弦相似度
+    '''
+    #得到top5索引
+    #X 为每个问题 的 tf-idf 矩阵
+    score_idx = dict((i,v) for i,v in enumerate(res))
+    score_sorted = sorted(score_idx.items(),key= lambda k:k[1],reverse=True)
+    #输出结果类似于[(idx,score)]
+    idx = [idx[0] for idx in score_sorted]
+    top_idx = idx[:5]
+    print(top_idx)
+    '''
+    思路就是，因为原始数据对应着一个Q 一个A 从Q的idx中找相似的A~
+    '''
+    result = [dp.alist[i] for i in top_idx]
+    return result
+if __name__ == "__main__":
+    res = top5result("what languge does the word of 'symbiosis' come from")
+    print(res)
