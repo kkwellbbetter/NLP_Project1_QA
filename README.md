@@ -8,7 +8,7 @@
 一共五个个文件（三个model）
 
   
-1  data_uhderstand 让你对数据有一个初始的理解
+1. data_uhderstand 让你对数据有一个初始的理解
 
 2. data_procs   特征工程~词分割。。。
 
