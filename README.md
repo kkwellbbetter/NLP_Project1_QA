@@ -5,8 +5,8 @@
 
 提取码：lhiv 
 
-  
-  一共五个个文件（三个model）
+一共五个个文件（三个model）
+
   
 1  data_uhderstand 让你对数据有一个初始的理解
 
